@@ -1,0 +1,723 @@
+1)BASIC UNIX SHELL COMMANDS
+
+pwd
+ls
+ls -l
+ls -a
+ls -la
+ls -lh
+ls -lt
+ls -lS
+ls -R
+ls /
+ls ~
+ls -la /
+
+mkdir cybersecurity
+mkdir -p parent/child
+
+mkdir sample
+rmdir sample
+
+cd Documents
+pwd
+cd ..
+cd ~
+cd -
+
+cat file1.txt
+cat > file1.txt
+
+banner LINUX
+
+touch sample.txt
+
+file sample.txt
+
+wc file1.txt
+wc -l file1.txt
+wc -w file1.txt
+wc -c file1.txt
+
+sort names.txt
+sort -r names.txt
+
+cut -d',' -f2 students.txt
+
+grep "Cyber" students.txt
+grep -i "cyber" file.txt
+grep -n "Cyber" file.txt
+grep -r "Cyber" .
+
+dd if=/dev/zero of=test.img bs=1M count=5
+
+df -h
+
+du -h
+du -sh Documents
+
+ulimit -a
+ulimit -n
+
+2)INODE, I/O REDIRECTION, PIPE, PROCESS CONTROL
+
+ls -i filenew.txt
+stat filenew.txt
+df -i
+
+ln -s filenew.txt softlink2
+ls -li
+
+ln filenew.txt hardlink
+ls -li
+
+ln filenew.txt hardlink2
+ls -li
+
+touch io.txt
+ls > io.txt
+cat io.txt
+
+echo "End of the output" >> io.txt
+cat io.txt
+
+sort < io.txt
+
+ls ghj 2> error.txt
+cat error.txt
+
+ls qwe 2>> error.txt
+cat error.txt
+
+ls dir1 asd &> errormsg.txt
+cat errormsg.txt
+
+ls dir1 asd > output.txt 2> err.txt
+cat output.txt
+cat err.txt
+
+ls > /dev/null
+
+cat << EOF
+vijay
+rithika
+lima
+ramkumar
+kevin
+vishal
+keerthi
+EOF
+
+wc -w <<< "Linux Programming"
+
+echo "Hello Linux" | tee output.txt
+cat output.txt
+
+ls | wc -l
+ls | grep ".txt"
+cat names.txt | sort
+cat data.txt | head -3
+cat data.txt | tail -2
+ls | grep ".txt" | wc -l
+
+ps
+ps -ef
+top
+
+kill PID
+kill -15 PID
+kill -2 PID
+kill -1 PID
+kill -9 PID
+
+sleep 50 &
+jobs
+
+bg %1
+fg %1
+
+nohup sleep 300 &
+nice -n 10 sleep 100
+renice 5 -p PID
+exec ls
+
+sudo apt update
+sudo apt install mailutils
+
+mail -s "Meeting" student
+
+echo "Linux Lab Tomorrow" | mail -s "Reminder" student
+
+mail
+
+d 1
+q
+
+3)STACK AND STACK FRAMES IN A LINUX PROCESS
+program 1
+sudo apt update
+sudo apt install build-essential gdb nano -y
+nano stack.c
+
+#include <stdio.h>
+
+void display(int x)
+{
+    int y = 20;
+
+    printf("Inside display()\n");
+    printf("Address of x: %p\n", (void *)&x);
+    printf("Address of y: %p\n", (void *)&y);
+}
+
+int main(void)
+{
+    int a = 10;
+
+    printf("Inside main()\n");
+    printf("Address of a: %p\n", (void *)&a);
+
+    display(a);
+
+    return 0;
+}
+ctrl+o,enter,ctrl+x
+>gcc -Wall -Wextra -g stack.c -o stack
+>./stack
+program2
+nano stackex.c
+
+#include <stdio.h>
+
+void func3(void)
+{
+    printf("Inside func3()\n");
+}
+
+void func2(void)
+{
+    int r = 45;
+    printf("Inside func2(), r = %d\n", r);
+    func3();
+}
+
+void func1(void)
+{
+    int s = 23;
+    printf("Inside func1(), s = %d\n", s);
+    func2();
+}
+
+int main(void)
+{
+    int a = 10;
+    printf("Inside main(), a = %d\n", a);
+    func1();
+    return 0;
+}
+>gcc -Wall -Wextra -g -O0 stackex.c -o stackex
+>gdb ./stackex
+>(gdb)=  break main, run, backtrace, next, step, info frame, info locals
+, info registers rsp rbp, step, backtrace, quit, ./stackex.
+
+
+4)MEMORY ALLOCATION ON HEAP AND STACK
+> nano memory.c
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int stack_var = 10;
+    int *heap_var;
+
+    heap_var = (int *)malloc(sizeof(int));
+
+    if (heap_var == NULL)
+    {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
+
+    *heap_var = 20;
+
+    printf("Stack variable value : %d\n", stack_var);
+    printf("Stack variable address : %p\n",
+           (void *)&stack_var);
+
+    printf("Heap variable value : %d\n", *heap_var);
+    printf("Heap variable address : %p\n",
+           (void *)heap_var);
+
+    free(heap_var);
+
+    return 0;
+}
+ 
+> gcc -Wall -Wextra -g memory.c -o memory
+
+
+>./memory
+>gcc -g -O0 memory.c -o memory
+>gdb ./memory
+(gdb)= 
+break main
+run
+next
+print stack_var
+print &stack_var
+next
+next
+print heap_var
+print *heap_var
+quit
+
+5)Shell Scripting – User Count and Column List
+
+cd ~
+nano usercount.sh
+
+
+#!/bin/bash
+
+echo "Currently logged-in users:"
+who
+
+echo "Number of logged-in sessions:"
+who | wc -l
+
+>chmod +x usercount.sh
+>./usercount.sh
+
+single line command-=
+    >sudo adduser userA
+     sudo adduser userB
+     sudo adduser userC
+     sudo adduser userD
+     sudo adduser userE
+
+>getent passwd | grep -E '^user[A-E]:'
+
+program 2
+
+
+nano columnlist.sh
+
+
+#!/bin/bash
+
+echo "Column-wise listing of files in $HOME:"
+ls -C "$HOME"
+
+>chmod +x columnlist.sh
+>./columnlist.sh
+
+6)Process Priority and Continuing a Job After Logout
+
+>sleep 300 &
+> ps -l
+>nice -n 10 sleep 300 &
+> ps -eo pid,ni,pri,comm --sort=ni
+>ps -eo pid,ni,pri,comm --sort=ni | awk '$2 > 0'
+
+program2
+
+nano background.sh
+
+
+#!/bin/bash
+
+while true
+do
+    echo "Background job is running: $(date)"
+    sleep 10
+done
+>chmod +x background.sh
+>nohup ./background.sh > background.log 2>&1 &
+>pgrep -af background.sh
+>tail background.log
+>pgrep -af background.sh
+>tail background.log
+>pkill -f '[b]ash ./background.sh'
+
+
+
+8)Control Flow Commands and Tcl Data Structures
+
+
+sudo apt update
+sudo apt install tcl -y
+tclsh
+nano control_ds.tcl
+
+#!/usr/bin/tclsh
+
+# If-else control flow
+set num 7
+
+if {$num % 2 == 0} {
+    puts "$num is even"
+} else {
+    puts "$num is odd"
+}
+
+# For loop
+puts "Numbers 1 to 5:"
+for {set i 1} {$i <= 5} {incr i} {
+    puts $i
+}
+
+# Tcl list
+set fruits [list Apple Banana Mango]
+lappend fruits Orange
+
+puts "Fruit list:"
+foreach f $fruits {
+    puts $f
+}
+
+# Tcl associative array
+set marks(Ravi) 85
+set marks(Kiran) 90
+set marks(Asha) 78
+
+puts "Student marks:"
+foreach name [lsort [array names marks]] {
+    puts "$name -> $marks($name)"
+}
+
+
+
+>tclsh control_ds.tcl
+
+
+9)Tk Widgets — Entry, Listbox, Focus and Grab
+
+sudo apt install tk -y
+
+wish --version
+wish
+nano widgets_demo.tcl
+
+
+#!/usr/bin/wish
+
+# Entry widget
+label .lbl -text "Enter an item:"
+entry .ent -width 25
+
+pack .lbl -pady 5
+pack .ent -pady 5
+
+# Listbox widget
+listbox .lst -height 6 -width 25
+.lst insert end Pen Book Bag
+
+pack .lst -pady 5
+
+# Add entry text to the listbox
+proc addItem {} {
+    set val [.ent get]
+
+    if {$val ne ""} {
+        .lst insert end $val
+        .ent delete 0 end
+    }
+}
+
+button .addBtn -text "Add Item" -command addItem
+pack .addBtn -pady 5
+
+# Set initial keyboard focus
+focus .ent
+
+# Modal confirmation dialog
+proc showConfirm {} {
+    if {[winfo exists .confirm]} {
+        return
+    }
+
+    toplevel .confirm
+    wm title .confirm "Confirmation"
+
+    label .confirm.msg -text "Item added successfully!"
+    button .confirm.ok -text "OK" -command {
+        grab release .confirm
+        destroy .confirm
+    }
+
+    pack .confirm.msg .confirm.ok -padx 10 -pady 10
+
+    grab .confirm
+    focus .confirm.ok
+}
+
+button .confirmBtn -text "Show Confirmation" \
+    -command showConfirm
+
+pack .confirmBtn -pady 5
+
+
+>wish widgets_demo.tcl
+echo $DISPLAY
+echo $WAYLAND_DISPLAY
+----------------------------------------
+7)Shell Programming Exercises
+
+sudo apt update
+sudo apt install bash perl nano -y
+
+7(a) Interactive Shell Script
+
+nano interactive.sh
+
+
+#!/bin/bash
+
+echo "Enter your name:"
+read name
+
+echo "Enter your age:"
+read age
+
+echo "Hello $name! You are $age years old."
+
+chmod +x interactive.sh
+./interactive.sh
+
+
+7(b) Positional Parameters
+
+nano positional.sh
+
+
+#!/bin/bash
+
+echo "Script name: $0"
+echo "First argument: $1"
+echo "Second argument: $2"
+echo "Number of arguments: $#"
+echo "All arguments: $@"
+
+chmod +x positional.sh
+./positional.sh apple banana
+
+7(c) Arithmetic Operations
+
+nano arithmetic.sh
+
+
+
+#!/bin/bash
+
+echo "Enter first number:"
+read a
+
+echo "Enter second number:"
+read b
+
+echo "Sum = $((a + b))"
+echo "Difference = $((a - b))"
+echo "Product = $((a * b))"
+
+if [ "$b" -ne 0 ]; then
+    echo "Quotient = $((a / b))"
+    echo "Remainder = $((a % b))"
+else
+    echo "Division and modulus by zero are not allowed."
+fi
+
+>chmod +x arithmetic.sh
+./arithmetic.sh
+
+7(d) If-Then-Fi
+
+nano if_then.sh
+
+#!/bin/bash
+
+echo "Enter a number:"
+read n
+
+if [ "$n" -gt 0 ]; then
+    echo "$n is a positive number."
+fi
+
+>chmod +x if_then.sh
+./if_then.sh
+
+7(e) If-Then-Else-Fi
+
+nano if_else.sh
+
+
+#!/bin/bash
+
+echo "Enter a number:"
+read n
+
+if [ $((n % 2)) -eq 0 ]; then
+    echo "$n is even."
+else
+    echo "$n is odd."
+fi
+>chmod +x if_else.sh
+./if_else.sh
+
+7(f) Nested If-Else
+
+nano nested_if.sh
+
+
+#!/bin/bash
+
+echo "Enter three numbers:"
+read a b c
+
+if [ "$a" -ge "$b" ]; then
+    if [ "$a" -ge "$c" ]; then
+        echo "$a is the largest."
+    else
+        echo "$c is the largest."
+    fi
+else
+    if [ "$b" -ge "$c" ]; then
+        echo "$b is the largest."
+    else
+        echo "$c is the largest."
+    fi
+fi
+
+>chmod +x nested_if.sh
+./nested_if.sh
+
+7(g) Logical Operators
+nano logical.sh
+
+#!/bin/bash
+
+echo "Enter two numbers:"
+read a b
+
+if [ "$a" -gt 0 ] && [ "$b" -gt 0 ]; then
+    echo "Both numbers are positive."
+else
+    echo "At least one number is not positive."
+fi
+
+if [ "$a" -gt 0 ] || [ "$b" -gt 0 ]; then
+    echo "At least one number is positive."
+else
+    echo "Neither number is positive."
+fi
+
+if ! [ "$a" -gt 0 ]; then
+    echo "The first number is not positive."
+fi
+>chmod +x logical.sh
+./logical.sh
+
+7(h) Elif Ladder
+nano elif.sh
+
+#!/bin/bash
+
+echo "Enter marks (0-100):"
+read marks
+
+if [ "$marks" -ge 90 ] && [ "$marks" -le 100 ]; then
+    echo "Grade: A"
+elif [ "$marks" -ge 75 ] && [ "$marks" -lt 90 ]; then
+    echo "Grade: B"
+elif [ "$marks" -ge 60 ] && [ "$marks" -lt 75 ]; then
+    echo "Grade: C"
+elif [ "$marks" -ge 0 ] && [ "$marks" -lt 60 ]; then
+    echo "Grade: F"
+else
+    echo "Invalid marks."
+fi
+>.chmod +x elif.sh
+./elif.sh
+
+7(i) Case Structure
+
+
+nano case_demo.sh
+
+#!/bin/bash
+
+echo "Enter a number (1-7):"
+read day
+
+case "$day" in
+    1) echo "Monday" ;;
+    2) echo "Tuesday" ;;
+    3) echo "Wednesday" ;;
+    4) echo "Thursday" ;;
+    5) echo "Friday" ;;
+    6) echo "Saturday" ;;
+    7) echo "Sunday" ;;
+    *) echo "Invalid input" ;;
+esac
+>chmod +x case_demo.sh
+./case_demo.sh
+
+7(j) While Loop
+nano while_demo.sh
+
+#!/bin/bash
+
+i=1
+
+while [ "$i" -le 5 ]; do
+    echo "Number: $i"
+    i=$((i + 1))
+done
+>chmod +x while_demo.sh
+./while_demo.sh
+
+7(k) For Loop — Sum of Numbers from 1 to N
+
+nano for_demo.sh
+
+#!/bin/bash
+
+echo "Enter N:"
+read n
+
+sum=0
+
+for ((i = 1; i <= n; i++)); do
+    sum=$((sum + i))
+done
+
+echo "Sum of 1 to $n = $sum"
+>chmod +x for_demo.sh
+./for_demo.sh
+
+7(l) Metacharacters Using a Perl Script
+
+nano metacharacters.pl
+
+
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $text = "12345 2026-10-14 Laptop A123";
+
+if ($text =~ /^(\d+)/) {
+    print "Order number: $1\n";
+}
+
+if ($text =~ /(\d{4}-\d{2}-\d{2})/) {
+    print "Date: $1\n";
+}
+
+if ($text =~ /([A-Za-z]+)\s+([A-Za-z]\d+)$/) {
+    print "Item name: $1\n";
+    print "Item code: $2\n";
+}
+>chmod +x metacharacters.pl
+perl metacharacters.pl
