@@ -721,3 +721,647 @@ if ($text =~ /([A-Za-z]+)\s+([A-Za-z]\d+)$/) {
 }
 >chmod +x metacharacters.pl
 perl metacharacters.pl
+
+
+
+
+
+
+
+
+
+
+
+
+Open Ubuntu from the Windows Start menu. First update the package list and install the common tools used in these
+practicals.
+sudo apt update
+sudo apt install -y build-essential gdb perl tcl tk sysvbanner
+What gets installed?
+Package / command Purpose
+build-essential GCC compiler and basic build tools for C programs
+gdb Debugger for examining stack frames and program execution
+perl Runs Perl scripts
+tcl Provides tclsh to run Tcl scripts
+tk Provides wish to run graphical Tk scripts
+sysvbanner Provides the banner command (if available in your Ubuntu release)
+Check installed tools
+gcc --version
+gdb --version
+perl -v
+tclsh
+wish
+For tclsh and wish, type exit to leave their interactive prompt. The Tk command wish opens a GUI interpreter; on WSL,
+graphical support must be available (WSLg on supported Windows 11 setups).
+If apt reports “Temporary failure resolving archive.ubuntu.com”: fix the WSL network connection first; package
+installation cannot work until Ubuntu can reach its repositories.
+Basic nano workflow
+cd ~ # go to your home directory
+nano filename # create or edit a file
+# paste the program
+# Ctrl+O, Enter, Ctrl+X to save and exit
+chmod +x filename # make a script executable
+./filename # run an executable script
+CC1504 – Linux Programming | Practical Guide 1–9 Page 3
+EXERCISE 1: BASIC UNIX SHELL COMMANDS
+Aim: To study and execute basic Linux commands for directory, file, text, disk and system-limit management.
+Command names and purpose
+Command Purpose / example
+pwd Print current directory: pwd
+ls List files: ls, ls -l, ls -a, ls -lh, ls -lt, ls -lS, ls -R
+mkdir Create directory: mkdir cybersecurity
+rmdir Remove an empty directory: rmdir sample
+cd Change directory: cd Documents; cd ..; cd ~; cd -
+cat Display or create text: cat file.txt; cat > file.txt (finish with Ctrl+D)
+banner Display large text: banner LINUX
+touch Create empty file: touch sample.txt
+file Identify file type: file sample.txt
+wc Count lines/words/bytes: wc file.txt; wc -l file.txt; wc -w file.txt; wc -c file.txt
+sort Sort lines: sort names.txt; sort -r names.txt
+cut Extract a column: cut -d',' -f2 students.txt
+grep Search text: grep 'Cyber' students.txt; grep -i 'cyber' file.txt
+dd Create test image: dd if=/dev/zero of=test.img bs=1M count=5
+df Show filesystem space: df -h
+du Show directory usage: du -sh Documents
+ulimit Show resource limits: ulimit -a; ulimit -n
+Step-by-step execution
+cd ~
+pwd
+ls
+mkdir cybersecurity
+ls
+mkdir sample
+rmdir sample
+cd cybersecurity
+pwd
+cd ..
+touch sample.txt
+file sample.txt
+cat > file1.txt
+Linux
+Cyber Security
+Ubuntu
+# Press Ctrl+D
+cat file1.txt
+wc file1.txt
+wc -l file1.txt
+Create sample data files to practise sort, cut and grep:
+printf 'Kumar\nArun\nBala\n' > names.txt
+sort names.txt
+sort -r names.txt
+printf '101,Arun,CSE\n102,Bala,Cyber\n103,Kumar,IT\n' > students.txt
+cut -d',' -f2 students.txt
+grep 'Cyber' students.txt
+df -h
+du -sh ~
+ulimit -a
+Install banner only if needed
+CC1504 – Linux Programming | Practical Guide 1–9 Page 4
+sudo apt update
+sudo apt install -y sysvbanner
+banner LINUX
+Safety note: The dd example above creates a 5 MB file named test.img in your home directory. Do not experiment with
+dd against a disk device such as /dev/sda.
+Result: Thus, basic Linux shell commands for files, directories, text processing, disk usage and system limits were
+studied and executed.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 5
+EXERCISE 2: INODE, I/O REDIRECTION, PIPE, PROCESS
+CONTROL AND MAIL
+Aim: To study inode information, links, input/output redirection, pipes, process-control and mail commands.
+A. Inode and links
+An inode stores file metadata. It does not store the filename. Create a test file first:
+cd ~
+echo 'Linux inode practical' > filenew.txt
+ls -i filenew.txt # inode number
+stat filenew.txt # detailed inode information
+df -i # inode usage
+Symbolic link and hard link
+ln -s filenew.txt softlink
+ls -li filenew.txt softlink
+ln filenew.txt hardlink
+ls -li filenew.txt hardlink
+A symbolic link has its own inode and stores a path. A hard link points to the same inode as the original file.
+B. I/O redirection command names
+Syntax Meaning
+command > file Redirect standard output; overwrite file
+command >> file Append standard output
+command < file Read standard input from file
+command 2> file Redirect error output
+command 2>> file Append error output
+command &> file Redirect standard output and errors together
+command > out 2> err Save output and errors separately
+command > /dev/null Discard standard output
+command << EOF Here-document: provide multiple lines until EOF
+command <<< 'text' Here-string: provide one string as input
+command | tee file Display output and also save it
+Try redirection and pipes
+ls > io.txt
+cat io.txt
+echo 'End of output' >> io.txt
+sort < io.txt
+ls definitely_missing_file 2> error.txt
+cat error.txt
+ls > output.txt 2> errors.txt
+ls | wc -l
+ls | grep '.txt'
+echo 'Hello Linux' | tee tee_output.txt
+cat tee_output.txt
+wc -w <<< 'Linux Programming'
+C. Process-control commands
+Command names: ps (current-terminal processes), ps -ef (all processes), top (live view; press q to quit), kill PID
+(request termination), kill -9 PID (force termination), jobs, bg, fg, Ctrl+Z (suspend foreground job), pkill process_name.
+sleep 100 &
+jobs
+ps
+ps -ef | head
+top
+# press q to exit top
+# To stop the sleep job, use its job number:
+CC1504 – Linux Programming | Practical Guide 1–9 Page 6
+kill %1
+If you suspend a foreground job with Ctrl+Z, use bg to continue it in the background or fg to bring it back.
+D. Mail commands (optional)
+sudo apt update
+sudo apt install -y mailutils
+mail -s 'Meeting' YOUR_LINUX_USERNAME
+# Type the message, then press Ctrl+D
+echo 'Linux Lab Reminder' | mail -s 'Reminder' YOUR_LINUX_USERNAME
+mail
+# Inside mail: type a message number to read; d 1 deletes message 1; q quits
+Important: Installing mailutils alone does not guarantee delivery. A mail transfer service and valid system configuration
+are required. Use a local test mailbox only; do not assume a message was delivered externally.
+Result: Thus, inode details, links, I/O redirection, pipes, process-control and mail commands were studied and practised.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 7
+EXERCISE 3: STACK AND STACK FRAMES IN A LINUX
+PROCESS
+Aim: To study stack memory and stack frames created during function calls in a Linux process.
+Installation / prerequisites
+sudo apt update
+sudo apt install -y build-essential
+Create the file using nano
+nano stack.c
+Paste the following program. Save with Ctrl + O, press Enter, then exit with Ctrl + X.
+#include <stdio.h>
+void display(int x)
+{
+ int y = 20;
+ printf("Inside display()\\n");
+ printf("Address of x: %p\\n", (void *)&x);
+ printf("Address of y: %p\\n", (void *)&y);
+}
+int main(void)
+{
+ int a = 10;
+ printf("Inside main()\\n");
+ printf("Address of a: %p\\n", (void *)&a);
+ display(a);
+ return 0;
+}
+Run the program
+gcc -Wall -g stack.c -o stack
+./stack
+Sample output: The program prints “Inside main()”, the address of a, “Inside display()”, and the addresses of x and y.
+The hexadecimal addresses will differ on each run because of ASLR.
+Optional: inspect stack frames using GDB
+sudo apt install -y gdb
+gcc -g stack.c -o stack
+gdb ./stack
+At the (gdb) prompt, enter:
+break main
+run
+step
+bt
+info frame
+info locals
+continue
+quit
+Command names: gcc = C compiler; -g = include debugging information; gdb = debugger; break = set breakpoint; run =
+start; step = execute a source step; bt = backtrace; info frame = frame details; info locals = local variables.
+Result: Thus, stack memory and stack frames during function execution were demonstrated using a C program and,
+optionally, GDB.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 8
+EXERCISE 4: MEMORY ALLOCATION ON HEAP AND STACK
+Aim: To study automatic stack allocation and dynamic heap allocation in a Linux process.
+Installation / prerequisites
+sudo apt update
+sudo apt install -y build-essential
+Create the file using nano
+nano memory.c
+Paste the following program. Save with Ctrl + O, press Enter, then exit with Ctrl + X.
+#include <stdio.h>
+#include <stdlib.h>
+int main(void)
+{
+ int stack_var = 10;
+ int *heap_var = malloc(sizeof(int));
+ if (heap_var == NULL) {
+ printf("Memory allocation failed\\n");
+ return 1;
+ }
+ *heap_var = 20;
+ printf("Stack variable value: %d\\n", stack_var);
+ printf("Stack variable address: %p\\n", (void *)&stack_var);
+ printf("Heap variable value: %d\\n", *heap_var);
+ printf("Heap variable address: %p\\n", (void *)heap_var);
+ free(heap_var);
+ return 0;
+}
+Run the program
+gcc -Wall -g memory.c -o memory
+./memory
+Sample output: Stack variable value: 10; Heap variable value: 20. Memory addresses vary on each execution.
+Important command names
+malloc() allocates memory dynamically; calloc() allocates and zero-initializes memory; realloc() changes allocated size;
+free() releases allocated memory. These are C library functions, not terminal commands.
+Optional GDB commands
+gcc -g memory.c -o memory
+gdb ./memory
+break main
+run
+next
+print stack_var
+print heap_var
+next
+continue
+quit
+Result: Thus, stack and heap memory allocation were demonstrated using malloc() and free() in a C program.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 9
+EXERCISE 5: SHELL SCRIPTING – USER COUNT AND
+COLUMN LIST
+Aim: To display currently logged-in sessions and list files in the home directory in column-wise format.
+Program 1: User count
+Installation / prerequisites
+# Most commands used here are already available in Ubuntu.
+Create the file using nano
+nano usercount.sh
+Paste the following program. Save with Ctrl + O, press Enter, then exit with Ctrl + X.
+#!/bin/bash
+echo "Currently logged-in users:"
+who
+echo "Number of logged-in sessions:"
+who | wc -l
+Run the program
+chmod +x usercount.sh
+./usercount.sh
+Command names: who = show logged-in sessions; wc -l = count lines; chmod +x = add execute permission.
+Optional: create test users
+Creating users changes the Ubuntu account database. Do this only if your lab specifically requires it. Use unique test
+names and avoid creating an account that already exists.
+sudo adduser userA
+sudo adduser userB
+sudo adduser userC
+sudo adduser userD
+sudo adduser userE
+getent passwd | grep -E '^user[A-E]:'
+The adduser command asks for a password and profile details. Press Enter to accept optional blank fields. The grep
+command verifies the accounts.
+Program 2: Column-wise file listing
+Installation / prerequisites
+# Most commands used here are already available in Ubuntu.
+Create the file using nano
+nano columnlist.sh
+Paste the following program. Save with Ctrl + O, press Enter, then exit with Ctrl + X.
+#!/bin/bash
+echo "Column-wise listing of files in $HOME:"
+ls -C "$HOME"
+Run the program
+chmod +x columnlist.sh
+./columnlist.sh
+Command names: $HOME = home-directory environment variable; ls = list files; -C = display entries in columns.
+Result: Thus, shell scripts to count logged-in sessions and display the home directory in columns were successfully
+executed.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 10
+EXERCISE 6: PROCESS PRIORITY AND CONTINUING A JOB
+AFTER LOGOUT
+Aim: To run a process with below-normal scheduling priority and to continue a background job after logout using nohup.
+Program 1: Nice priority
+Command name: nice starts a command with a selected nice value. A larger positive nice value generally means lower
+scheduling priority.
+sleep 300 &
+ps -l
+nice -n 10 sleep 300 &
+ps -l
+ps -eo pid,ni,pri,comm --sort=ni | awk '$2 > 0'
+Look at the NI column. The first sleep process normally has NI 0; the second has NI 10. PIDs are assigned by your
+system and will differ.
+Program 2: Continue job after logout using nohup
+Create a small long-running test script:
+nano backup.sh
+#!/bin/bash
+while true
+do
+ echo "Backup is running..."
+ sleep 5
+done
+Save using Ctrl+O, Enter, Ctrl+X. Then run:
+chmod +x backup.sh
+nohup ./backup.sh > backup.log 2>&1 &
+echo $!
+ps -ef | grep '[b]ackup.sh'
+tail backup.log
+The process ID printed by echo $! is the PID. The log is saved to backup.log because output was explicitly redirected.
+The standard nohup behaviour, when output is not redirected and the terminal is unavailable, is to append output to
+nohup.out.
+Stop the test job
+pkill -f '[b]ash ./backup.sh'
+# Alternative: kill the exact PID you saved
+kill PID
+WSL note: Closing an Ubuntu terminal window is not always identical to logging out of a remote Linux SSH session.
+WSL may stop processes when its environment shuts down. Verify after reopening with ps -ef. PPID may become 1 or
+another system reaper; it is not guaranteed to be 1 in every environment.
+Result: Thus, process priority was checked using nice and ps, and a background job was started using nohup.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 11
+EXERCISE 7: SHELL PROGRAMMING EXERCISES AND PERL
+Aim: To practise interactive input, positional parameters, arithmetic, conditional statements, loops and Perl
+regular-expression metacharacters.
+For each Bash exercise below, create the named file with nano, paste the code, save, then run chmod +x filename and
+./filename. Bash is already installed in Ubuntu.
+7(a) Interactive input
+Create: nano interactive.sh
+#!/bin/bash
+echo "Enter your name:"
+read name
+echo "Enter your age:"
+read age
+echo "Hello $name! You are $age years old."
+Run: chmod +x interactive.sh then ./interactive.sh
+Expected behaviour: Prompts for name and age, then prints a greeting.
+7(b) Positional parameters
+Create: nano positional.sh
+#!/bin/bash
+echo "Script name: $0"
+echo "First argument: $1"
+echo "Second argument: $2"
+echo "Number of arguments: $#"
+echo "All arguments: $@"
+Run: chmod +x positional.sh then ./positional.sh apple banana
+Expected behaviour: $0 = script name; $1/$2 = first/second arguments; $# = argument count; $@ = all arguments.
+7(c) Arithmetic operations
+Create: nano arithmetic.sh
+#!/bin/bash
+echo "Enter first number:"
+read a
+echo "Enter second number:"
+read b
+if [ "$b" -eq 0 ]; then
+ echo "Division by zero is not allowed."
+ exit 1
+fi
+echo "Sum = $((a + b))"
+echo "Difference = $((a - b))"
+echo "Product = $((a * b))"
+echo "Quotient = $((a / b))"
+echo "Remainder = $((a % b))"
+Run: chmod +x arithmetic.sh then ./arithmetic.sh
+Expected behaviour: Enter 20 and 6: sum 26, difference 14, product 120, quotient 3, remainder 2.
+7(d) If-then-fi positive check
+Create: nano if_then.sh
+#!/bin/bash
+echo "Enter a number:"
+read n
+if [ "$n" -gt 0 ]; then
+ echo "$n is a positive number."
+fi
+Run: chmod +x if_then.sh then ./if_then.sh
+Expected behaviour: Enter 8 to display 8 is a positive number.
+7(e) Even or odd
+CC1504 – Linux Programming | Practical Guide 1–9 Page 12
+Create: nano if_else.sh
+#!/bin/bash
+echo "Enter a number:"
+read n
+if [ $((n % 2)) -eq 0 ]; then
+ echo "$n is even."
+else
+ echo "$n is odd."
+fi
+Run: chmod +x if_else.sh then ./if_else.sh
+Expected behaviour: Enter 7 to display 7 is odd.
+7(f) Largest of three
+Create: nano nested_if.sh
+#!/bin/bash
+echo "Enter three numbers:"
+read a b c
+if [ "$a" -ge "$b" ]; then
+ if [ "$a" -ge "$c" ]; then
+ echo "$a is the largest."
+ else
+ echo "$c is the largest."
+ fi
+else
+ if [ "$b" -ge "$c" ]; then
+ echo "$b is the largest."
+ else
+ echo "$c is the largest."
+ fi
+fi
+Run: chmod +x nested_if.sh then ./nested_if.sh
+Expected behaviour: Enter 10 25 15 to display 25 is the largest.
+7(g) Logical AND and OR
+Create: nano logical.sh
+#!/bin/bash
+echo "Enter two numbers:"
+read a b
+if [ "$a" -gt 0 ] && [ "$b" -gt 0 ]; then
+ echo "Both numbers are positive."
+else
+ echo "At least one number is not positive."
+fi
+if [ "$a" -gt 0 ] || [ "$b" -gt 0 ]; then
+ echo "At least one number is positive."
+fi
+Run: chmod +x logical.sh then ./logical.sh
+Expected behaviour: && means AND; || means OR. Example input 5 -3.
+7(h) Elif grade ladder
+Create: nano elif.sh
+#!/bin/bash
+echo "Enter marks:"
+read marks
+if [ "$marks" -ge 90 ]; then
+ echo "Grade: A"
+elif [ "$marks" -ge 75 ]; then
+ echo "Grade: B"
+elif [ "$marks" -ge 60 ]; then
+ echo "Grade: C"
+else
+ echo "Grade: F"
+fi
+Run: chmod +x elif.sh then ./elif.sh
+Expected behaviour: Enter 82 to display Grade: B.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 13
+7(i) Case structure
+Create: nano case_demo.sh
+#!/bin/bash
+echo "Enter a number (1-7):"
+read day
+case "$day" in
+ 1) echo "Monday" ;;
+ 2) echo "Tuesday" ;;
+ 3) echo "Wednesday" ;;
+ 4) echo "Thursday" ;;
+ 5) echo "Friday" ;;
+ 6) echo "Saturday" ;;
+ 7) echo "Sunday" ;;
+ *) echo "Invalid input" ;;
+esac
+Run: chmod +x case_demo.sh then ./case_demo.sh
+Expected behaviour: Enter 4 to display Thursday.
+7(j) While loop
+Create: nano while_demo.sh
+#!/bin/bash
+i=1
+while [ "$i" -le 5 ]; do
+ echo "Number: $i"
+ i=$((i + 1))
+done
+Run: chmod +x while_demo.sh then ./while_demo.sh
+Expected behaviour: Prints Number: 1 through Number: 5.
+7(k) For loop sum
+Create: nano for_demo.sh
+#!/bin/bash
+echo "Enter N:"
+read n
+sum=0
+for ((i = 1; i <= n; i++)); do
+ sum=$((sum + i))
+done
+echo "Sum of 1 to $n = $sum"
+Run: chmod +x for_demo.sh then ./for_demo.sh
+Expected behaviour: Enter 5 to display Sum of 1 to 5 = 15.
+7(l) Perl regular-expression metacharacters
+Install Perl if it is not already installed: sudo apt install -y perl. Create the file:
+nano metachars.pl
+#!/usr/bin/perl
+use strict;
+use warnings;
+my $str = "Order12345 placed on 2026-08-01 for item Apple99";
+if ($str =~ /^Order(\d+)/) {
+ print "Order number: $1\n";
+}
+if ($str =~ /(\d{4}-\d{2}-\d{2})/) {
+ print "Date found: $1\n";
+}
+if ($str =~ /([A-Za-z]+)(\d+)$/) {
+ print "Item name: $1, Item code: $2\n";
+}
+perl metachars.pl
+Expected output: Order number: 12345; Date found: 2026-08-01; Item name: Apple, Item code: 99.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 14
+Metacharacters: ^ = start of string; $ = end of string; \d = digit; {4} = four repetitions; + = one or more; [A-Za-z] =
+alphabetic character.
+Result: Thus, Bash scripts and a Perl script were executed to demonstrate input, parameters, arithmetic, conditions,
+loops, case and regular expressions.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 15
+EXERCISE 8: TCL CONTROL FLOW COMMANDS AND DATA
+STRUCTURES
+Aim: To demonstrate if-else, for, foreach, Tcl lists and associative arrays.
+Install Tcl
+sudo apt update
+sudo apt install -y tcl
+tclsh
+If the tclsh prompt appears, type exit to return to the Ubuntu shell.
+Create Tcl program
+Create the file using nano:
+nano control_ds.tcl
+#!/usr/bin/tclsh
+# if-else
+set num 7
+if {$num % 2 == 0} {
+ puts "$num is even"
+} else {
+ puts "$num is odd"
+}
+# for loop
+puts "Numbers 1 to 5:"
+for {set i 1} {$i <= 5} {incr i} {
+ puts " $i"
+}
+# Tcl list
+set fruits [list Apple Banana Mango]
+lappend fruits Orange
+puts "Fruit list:"
+foreach f $fruits {
+ puts " $f"
+}
+# Associative array
+set marks(Ravi) 85
+set marks(Kiran) 90
+set marks(Asha) 78
+puts "Student marks:"
+foreach name [array names marks] {
+ puts " $name -> $marks($name)"
+}
+Run the Tcl program
+tclsh control_ds.tcl
+Expected output: 7 is odd; numbers 1 to 5; Fruit list Apple, Banana, Mango, Orange; student marks for Ravi, Kiran and
+Asha. The order of associative-array entries may vary.
+Command names: tclsh = Tcl interpreter; set = assign value; puts = print; for = counted loop; foreach = iterate over
+items; lappend = append to list; array names = get array keys.
+Result: Thus, Tcl control-flow commands, lists and associative arrays were demonstrated successfully.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 16
+ss
+EXERCISE 9: TK WIDGETS – ENTRY, LISTBOX, FOCUS AND
+GRAB
+Aim: To create a Tk graphical interface using Entry, Listbox, Focus and Grab.
+Install Tk
+sudo apt update
+sudo apt install -y tk
+which wish
+wish --version
+The wish program runs Tk scripts. WSL needs GUI support (normally WSLg on Windows 11). Check:
+echo $DISPLAY
+echo $WAYLAND_DISPLAY
+If both variables are empty or wish reports “couldn't connect to display”, configure/update WSL GUI support before
+running the graphical program.
+Create the Tk script
+nano widgets_demo.tcl
+#!/usr/bin/wish
+# Entry widget
+label .lbl -text "Enter an item:"
+entry .ent -width 25
+pack .lbl -pady 5
+pack .ent -pady 5
+# Listbox widget
+listbox .lst -height 6 -width 25
+.lst insert end Pen Book Bag
+pack .lst -pady 5
+# Add entry text to listbox
+proc addItem {} {
+ set val [.ent get]
+ if {$val ne ""} {
+ .lst insert end $val
+ .ent delete 0 end
+ }
+}
+button .addBtn -text "Add Item" -command addItem
+pack .addBtn -pady 5
+# Initial keyboard focus
+focus .ent
+# Modal confirmation dialog
+proc showConfirm {} {
+ if {[winfo exists .confirm]} {
+ return
+ }
+ toplevel .confirm
+ wm title .confirm "Confirmation"
+ label .confirm.msg -text "Item added successfully!"
+ button .confirm.ok -text "OK" -command {
+ grab release .confirm
+ destroy .confirm
+ }
+ pack .confirm.msg .confirm.ok -padx 10 -pady 10
+ grab .confirm
+ focus .confirm.ok
+}
+button .confirmBtn -text "Show Confirmation" -command showConfirm
+pack .confirmBtn -pady 5
+Run the Tk program
+wish widgets_demo.tcl
+A window should appear with a label, Entry box, Listbox containing Pen, Book and Bag, an Add Item button and a Show
+Confirmation button. Type Eraser in the Entry box and click Add Item. Click Show Confirmation to open the modal dialog;
+click OK to close it.
+CC1504 – Linux Programming | Practical Guide 1–9 Page 17
+Widget / command names: entry = text input; listbox = list of items; focus = keyboard focus; grab = directs input to the
+modal dialog; toplevel = new window; pack = place widgets; wish = Tk interpreter.
+Result: Thus, a Tk GUI was created and executed to demonstrate Entry, Listbox, Focus and Grab.
+
