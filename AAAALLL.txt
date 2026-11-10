@@ -334,10 +334,12 @@ do
     echo "Background job is running: $(date)"
     sleep 10
 done
->chmod +x background.sh
->nohup ./background.sh > background.log 2>&1 &
->pgrep -af background.sh
->tail background.log
+>chmod +x backup.sh
+>nohup ./backup.sh &  
+>ps -ef | grep backup.sh
+>cat nohup.out
+>pkill -f './backup.sh'
+ (	`or)
 >pgrep -af background.sh
 >tail background.log
 >pkill -f '[b]ash ./background.sh'
