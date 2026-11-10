@@ -298,7 +298,8 @@ single line command-=
      sudo adduser userE
 
 >getent passwd | grep -E '^user[A-E]:'
-
+>getent passwd | cut -d: -f1,3
+>getent passwd | cut -d: -f1 | wc -l
 program 2
 
 
